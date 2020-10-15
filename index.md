@@ -1,8 +1,6 @@
-## Welcome to GitHub Pages
+## Welcome to NTU AISpeechlab
 
-You can use the [editor on GitHub](https://github.com/ntuspeechlab/ntuspeechlab.github.io/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
-
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+Visit our team website [here](https://www.ntu.edu.sg/home/aseschng/speechLab_intro.html) or [here](https://temasek-labs.ntu.edu.sg/Research/KET/Pages/Speech-Recognition.aspx)
 
 ### Markdown
 
