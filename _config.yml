@@ -16,8 +16,8 @@ sass:
 # Customise atom feed settings (this is where Jekyll-Feed gets configuration information)
 theme: jekyll-theme-cayman
 title: "Welcome to NTU AISpeechlab"
-description:	       "a Jekyll theme for running a blog or publication"
-author:              "Paul Le"
+description:	       "a blog about products and projects related to ASR"
+author:              "NTU AISpeechlab"
 
 # RSS 2.0 can be used instead of Atom by uncommenting following two lines
 #feed:
