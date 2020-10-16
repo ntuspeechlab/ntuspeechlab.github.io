@@ -13,6 +13,7 @@
 .posts-wrapper {
   padding-top: $header-thickness+10px;
   margin: auto;
+  margin-top: 50px;
   display: block;
   width: $container-width - 20px;
 }
@@ -28,6 +29,7 @@
   .posts-wrapper {
     padding-top: $header-thickness+10px;
     margin: auto;
+    margin-top: 50px;
     display: block;
     width: 95vw;
   }
