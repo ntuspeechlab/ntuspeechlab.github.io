@@ -1,9 +1,9 @@
 ---
 layout: post
 title: "Learning Resources"
-author: "Paul Le"
+author: "AISpeechlab"
 categories: resources
-tags: [documentation,sample]
+tags: [documentation,demo]
 image: arctic-4.jpg
 ---
 

@@ -1,10 +1,10 @@
 ---
 layout: post
-title: "About the Author"
-author: "Paul Le"
+title: "About the team"
+author: "AISpeechlab"
 categories: facts
-tags: [sample]
+tags: [introduction]
 image: cuba-4.jpg
 ---
 
-Hi there! I'm Paul. I’m a physics major turned programmer. Ever since I first learned how to program while taking a scientific computing for physics course, I have pursued programming as a passion, and as a career. Check out [my personal website](https://www.lenpaul.com/) for more information on my other projects (including more Jekyll themes!), as well as some of my writing.
+Hi there! We are AISpeechlab team from NTU. Check out [our team introduction](https://temasek-labs.ntu.edu.sg/Research/KET/Pages/Speech-Recognition.aspx) for more information on our team introduction or [our PI](https://www.ntu.edu.sg/home/aseschng/speechLab_intro.html) for more information about our projects and people.
