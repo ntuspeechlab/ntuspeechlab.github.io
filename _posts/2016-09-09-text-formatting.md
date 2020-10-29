@@ -1,56 +1,141 @@
 ---
 layout: post
-title: "Text Formatting"
-author: "Paul Le"
+title: "Access our Speechlab engine with batch mode"
+author: "Duc"
 categories: sample
 tags: [sample]
 image: arctic-1.jpg
 ---
 
-# Markdown Support
+# How it works
 
-As always, Jekyll offers support for GitHub Flavored Markdown, which allows you to format your posts using the [Markdown syntax](https://guides.github.com/features/mastering-markdown/). Examples of these text formatting features can be seen below. You can find this post in the `_posts` directory.
+Offline speech recognition server is built based on the Kaldi toolkit and implemented in Python, other scripting languages.
 
-## Basic Formatting
+## Process of transcribing audio
 
-With Markdown, it is possible to emphasize words by making them *italicized*, using *astericks* or _underscores_, or making them **bold**, using **double astericks** or __double underscores__. Of course, you can combine those two formats, with both _**bold and italicized**_ text, using any combination of the above syntax. You can also add a strikethrough to text using a ~~double tilde~~.
+The above picture illustrates how the offline decoding system works. The audio input will be processed through steps
 
-## Paragraphs
+### Step 1: Resample the audio file
+The audio needs to be split into mono channels, and sample rate that match with the trained model.
+Tools used: Soxi/ffmpeg
 
-This is what a paragraph looks like. For the purpose of demonstration, the rest of this paragraph and the next paragraph after will mean absolutely nothing. Proin eget nibh a massa vestibulum pretium. Suspendisse eu nisl a ante aliquet bibendum quis a nunc. Praesent varius interdum vehicula. Aenean risus libero, placerat at vestibulum eget, ultricies eu enim. Praesent nulla tortor, malesuada adipiscing adipiscing sollicitudin, adipiscing eget est. Praesent nulla tortor, malesuada adipiscing adipiscing sollicitudin, adipiscing eget est.
+### Step 2: Detect the speech in the input
+Speaker diarisation (or diarization) is the process of partitioning an input audio stream into homogeneous segments according to the speaker identity.
+Output of this process is the segment file (.seg), including the speaker id, segment that including speech, and start/end time
+Tools used: LIUM 8.4.1
 
-Proin eget nibh a massa vestibulum pretium. Suspendisse eu nisl a ante aliquet bibendum quis a nunc. Mauris lobortis nulla et felis ullamcorper bibendum. Phasellus et hendrerit mauris. Proin eget nibh a massa vestibulum pretium. Suspendisse eu nisl a ante aliquet bibendum quis a nunc. Praesent varius interdum vehicula. Aenean risus libero, placerat at vestibulum eget, ultricies eu enim. Praesent nulla tortor, malesuada adipiscing adipiscing sollicitudin, adipiscing eget est.
+### Step 3: Convert the audio to proper format (kaldi format)
+To process further by the kaldi toolkit, the audio data and segment file will be parse to kaldi script, to convert to kaldi proper format.
+Tools used: Kaldi scripts
+
+### Step 4: Extract features from the input
+Extract the features from the kaldi format, mfcc and iVector features.
+Tools used: Kaldi scripts
+
+### Step 5: Decode/Generate the transcription
+Features extracted from previous step will be parsed to kaldi toolkit, with our trained model, to generate the transcription in ctm/stm format.
+Furthermore, transcription are also converted to different formats, support different requests from user: like TextGrid, csv, text.
+
+The file output will be sent to public folder, user could have other post-processing like converting to their required format, sending to other modules (language understanding, adding sentence unit, etc.)
+
+The system will process input files sequentially. The ‘file_name’ of input audio files will be normalized into ‘file_id’. The output folder will have the following structure:
+
+/path/to/the/output/folder/
+.
+├── <file-id-1>
+│   ├── <file-id-1>.<model_name>.ctm
+│   ├── <file-id-1>.<model_name>.srt
+│   ├── <file-id-1>.<model_name>.stm
+│   ├── <file-id-1>.<model_name>.TextGrid
+│   └── <file-id-1>.<model_name>.txt
+├── <file-id-2>
+│   ├── <file-id-2>.<model_name>.ctm
+│   ├── <file-id-2>.<model_name>.srt
+│   ├── <file-id-2>.<model_name>.stm
+│   ├── <file-id-2>.<model_name>.TextGrid
+│   └── <file-id-2>.<model_name>.txt
+└── <file-id-3: eg: 8khz-testfile>
+    ├── 8khz-testfile.<model_name>.ctm
+    ├── 8khz-testfile.<model_name>.srt
+    ├── 8khz-testfile.<model_name>.stm
+    ├── 8khz-testfile.<model_name>.TextGrid
+    └── 8khz-testfile.<model_name>.txt
+
+*Other file types can be existed.
+Information extraction from the output:
+*.ctm file including word and start time, end time of each word
+*.srt, *.stm, *.textgrid including segments (sentences) with start time, end time.
+*.txt including the whole transcription.
 
 
-## Headings
+## File type and language supported
 
-Sometimes it is useful to have different levels of headings to structure your documents. Start lines with `#` to create headings. Multiple `##` in a row denote smaller heading size. The following demonstrate the full range of heading sizes:
+Languages
+Description
+Singapore Code Switch
 
-# Heading One (h1)
+Mandarin
 
-## Heading Two (h2)
+Singapore English
+Spoken languages      | Description
+--------------------- | --------------------:
+Singapore             | Where user speaks Singapore English
+Code-switch           | Where user speaks English and Mandarin interchangably
+Mandarin              | Where user speaks Mandarin
 
-### Heading Three (h3)
+User can upload file with size up to 500MB each time
+For all language models, we support the following file types: .mp3, .mp4, .wav
 
-#### Heading Four (h4)
 
-##### Heading Five (h5)
+## Recording notes
 
-###### Heading Six (h6)
+No matter what the input audio format, our offline system can process to down/up sample the audio file to the 16khz sampling rate, 16 bit rate, and mono channel to process. Our system performs best with audio in 16Khz sampling rate, 16 bit rate and close talk or telephony with clear and clean speech.
 
 ## Links
 
-You can create an inline link by wrapping link text in square brackets `[ ]`, and then wrapping the URL in parentheses `( )`. For example, it is very easy to [link to Google!](http://google.com).
+[link to gitbook!](https://maitrungduc.gitbook.io/ai-speechlab/guide/offline/how-it-works).
 
-## Blockquotes
+# Usage
 
-Blockquotes are useful for denoting quotes, or highlighting a large block of text. Single line blockquote:
+We provide user 2 way of using our offline system:
+* Using HTTP request which provides modern and standard interface. User can call our HTTP endpoints using curl or other tools like Postman. Our API can also be integrated as third party service.
+* The second way to use our offline system is through our web based application. We provide user an intuitive and easy UI to interact and explore how our offline engine works. Check out our next sections to see how to use our system.
 
-> This quote will change your life.
+## Using HTTP Request
 
-Multi line blockquote with a cite reference:
+POST | Login
+```
+https://gateway.speechlab.sg/auth/login
+```
 
-> People think focus means saying yes to the thing you've got to focus on. But that's not what it means at all. It means saying no to the hundred other good ideas that there are. You have to pick carefully. I'm actually as proud of the things we haven't done as the things I have done. Innovation is saying no to 1,000 things.
+This endpoint allows you to login and get an account token
+
+* Request
+Body Parameters       | Type                  | Description 
+--------------------- | :-------------------: | :-------------------- | --------------------:
+email - REQUIRED      | string                | Account's email
+password - REQUIRED   | string                | Account's password 
+
+* Response
+200: OK
+Login successfully
+
+```json
+{
+    "accessToken": "Your token"
+}
+```
+
+404: Not Found
+Email or password is incorrect
+
+```json-doc
+{
+    "statusCode": 401,
+    "message": "Unauthorized"
+}
+```
+
 
 ## Code and Syntax Highlighting
 
