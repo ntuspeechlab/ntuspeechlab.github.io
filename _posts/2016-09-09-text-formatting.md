@@ -15,24 +15,24 @@ Offline speech recognition server is built based on the Kaldi toolkit and implem
 
 The above picture illustrates how the offline decoding system works. The audio input will be processed through steps
 
-    ### Step 1: Resample the audio file
+    **Step 1: Resample the audio file**
     The audio needs to be split into mono channels, and sample rate that match with the trained model.
     Tools used: Soxi/ffmpeg
 
-    ### Step 2: Detect the speech in the input
+    **Step 2: Detect the speech in the input**
     Speaker diarisation (or diarization) is the process of partitioning an input audio stream into homogeneous segments according to the speaker identity.
     Output of this process is the segment file (.seg), including the speaker id, segment that including speech, and start/end time
     Tools used: LIUM 8.4.1
 
-    ### Step 3: Convert the audio to proper format (kaldi format)
+    **Step 3: Convert the audio to proper format (kaldi format)**
     To process further by the kaldi toolkit, the audio data and segment file will be parse to kaldi script, to convert to kaldi proper format.
     Tools used: Kaldi scripts
 
-    ### Step 4: Extract features from the input
+    **Step 4: Extract features from the input**
     Extract the features from the kaldi format, mfcc and iVector features.
     Tools used: Kaldi scripts
 
-    ### Step 5: Decode/Generate the transcription
+    **Step 5: Decode/Generate the transcription**
     Features extracted from previous step will be parsed to kaldi toolkit, with our trained model, to generate the transcription in ctm/stm format.
     Furthermore, transcription are also converted to different formats, support different requests from user: like TextGrid, csv, text.
 
@@ -62,21 +62,16 @@ The system will process input files sequentially. The ‘file_name’ of input a
     ├── 8khz-testfile.<model_name>.TextGrid  
     └── 8khz-testfile.<model_name>.txt  
 ```
+_* Other file types can be existed._
 
-*Other file types can be existed.
-Information extraction from the output:
-*.ctm file including word and start time, end time of each word
-*.srt, *.stm, *.textgrid including segments (sentences) with start time, end time.
-*.txt including the whole transcription.
+Information extraction from the output:  
+*.ctm file including word and start time, end time of each word  
+*.srt, *.stm, *.textgrid including segments (sentences) with start time, end time.  
+*.txt including the whole transcription.  
 
 
 ## File type and language supported
 
-Languages
-Description
-Singapore Code Switch
-
-Mandarin
 
 | Spoken languages      | Description                                           |
 | --------------------- | ----------------------------------------------------- |
@@ -104,7 +99,54 @@ We provide user 2 way of using our offline system:
 
 ## Using HTTP Request
 
-POST | Login
+**POST | Register**
+```
+https://gateway.speechlab.sg/auth/register
+```
+
+This endpoint allows you to register an account
+
+
+* Request  
+
+| Body Parameters       | Type                  | Description            |
+| --------------------- | --------------------- | ---------------------- |
+| email - REQUIRED      | string                | Account's email        |
+| password - REQUIRED   | string                | Account's password     |
+
+* Response  
+    * 200: OK  
+    Register successfully. You should check your inbox for verification email
+
+    ```json
+    {
+        "role": "user",
+        "isVerified": false,
+        "_id": "user_id",
+        "email": "user_email",
+        "createdAt": "created date",
+        "message": "Please check your inbox for verification email"
+    }
+    ```
+
+    * 400: Bad Request  
+    Your email or password is not valid  
+
+    ```json-doc
+    {
+        "statusCode": 400,
+        "message": [
+            "password must be longer than or equal to 6 characters",
+            "password should not be empty",
+            "password must be a string"
+        ],
+        "error": "Bad Request"
+    }
+    ```
+
+After successfully register your account, there will be an email sent to your inbox to verify your email address. You need to click into verification link which is sent along with the email.  
+
+**POST | Login**
 ```
 https://gateway.speechlab.sg/auth/login
 ```
@@ -112,6 +154,7 @@ https://gateway.speechlab.sg/auth/login
 This endpoint allows you to login and get an account token
 
 * Request  
+
 | Body Parameters       | Type                  | Description            |
 | --------------------- | --------------------- | ---------------------- |
 | email - REQUIRED      | string                | Account's email        |
@@ -136,6 +179,85 @@ This endpoint allows you to login and get an account token
         "message": "Unauthorized"
     }
     ```
+
+**POST | Submit a job**
+```
+https://gateway.speechlab.sg/speech
+```
+
+This endpoint allows you to login and get an account token
+
+* Request  
+
+    * Headers  
+    | Header Parameters        | Type      | Description                                             |
+    | ---------------------    | --------- | ------------------------------------------------------- |
+    | Authorization - REQUIRED | string    | Access token. Format: Bearer <your token after login>   |
+
+    * Form Data Paramters  
+    | Form Data Parameters  | Type    | Description            |
+    | --------------------- | ------- | ---------------------- |
+    | file - REQUIRED       | object  | File object (binary)       |
+    | lang - REQUIRED       | string  | must be one of: ['english', 'mandarin', 'malay', 'english-mandarin', 'english-malay']    |
+    | queue - optional      | string  | Queue where your job will be running in        |
+    | audioType - optional  | string  | One of: ['closetalk', 'telephony']    |
+    | audioTrack - optional | string  | One of: ['single', 'multi']      |
+    | webhook - optional    | string  | API endpoint to receive update when your speech is ready (good way to get update of a speech, see below). Eg: http://your-api.com/status     |
+
+* Response  
+    * 200: OK  
+    Submited job successfully  
+
+    ```json
+    {
+        "result": null,
+        "status": "created",
+        "formats": [
+            "stm",
+            "srt",
+            "TextGrid"
+        ],
+        "sampling": "16khz",
+        "lang": "english",
+        "name": "Note",
+        "_id": "5f11c797b6d18b0029b60975", // Note this ID
+        "queue": "normal",
+        "createdAt": "2020-07-17T15:45:27.882Z"
+    }
+    ```
+
+    * 403: Forbidden  
+    This status can be one one:  
+        * Your email hasn't been verified. Please check your inbox for verification email  
+        * You're not allowed to submit job to this queue  
+        * Your account has been blocked. Please contact our administration for further detail.  
+
+    ```json-doc
+    {
+        "statusCode": 403,
+        "message": "You haven't verify your email yet. Please check your inbox.",
+        "error": "Forbidden"
+    }
+    ```
+    * 404: Not Found  
+    No speech found with provided ID  
+
+    ```json-doc
+    {
+        "statusCode": 404,
+        "message": "Speech not found",
+        "error": "Not Found"
+    }
+    ```
+
+    * Note: If you can provide audioType and audioTrack that best describe your audio file, we'll try to use our best-fit model to give you better result.
+    
+    After request successfully, in response returned, you'll see a field name _id, this is ID of your speech, we also call it SpeechID. Notice this for further requests.  
+    
+    * About **webhook**: an audio may take long time to decode (depends on its duration, type,...), and the processing time is not exact, not same even if you submit 2 identical jobs. So instead of keep calling us to get the status, You can provide your HTTP endpoint in webhook field and we'll send your audio's status, and when status is done you just need to call our endpoint to download your transcription  
+    
+    * About **queue**: a queue is where your job will be running in, each queue will have some workers to pick up your job and process, by default your job will be submitted to normal queue and this queue is shared among others, because of that sometimes your job will have to be queued until our workers available. If you want to have dedicated queue to not share with others, contact our support to get in detail.  
+
 
 
 ## Code and Syntax Highlighting
@@ -199,26 +321,6 @@ Numbered lists are made by using numbers instead of bullet points.
 3. List item three
 4. List item four
 
-## MathJax Example
-
-The [Schrödinger equation](https://en.wikipedia.org/wiki/Schr%C3%B6dinger_equation) is a partial differential equation that describes how the quantum state of a quantum system changes with time:
-
-$$
-i\hbar\frac{\partial}{\partial t} \Psi(\mathbf{r},t) = \left [ \frac{-\hbar^2}{2\mu}\nabla^2 + V(\mathbf{r},t)\right ] \Psi(\mathbf{r},t)
-$$
-
-[Joseph-Louis Lagrange](https://en.wikipedia.org/wiki/Joseph-Louis_Lagrange) was an Italian mathematician and astronomer who was responsible for the formulation of Lagrangian mechanics, which is a reformulation of Newtonian mechanics.
-
-$$ \frac{\mathrm{d}}{\mathrm{d}t} \left ( \frac {\partial  L}{\partial \dot{q}_j} \right ) =  \frac {\partial L}{\partial q_j} $$
-
-## Tables
-
-Title 1               | Title 2               | Title 3               | Title 4
---------------------- | :-------------------: | :-------------------- | --------------------:
-lorem                 | lorem ipsum           | lorem ipsum dolor     | lorem ipsum dolor sit
-lorem ipsum dolor sit | lorem ipsum dolor sit | lorem ipsum dolor sit | lorem ipsum dolor sit
-lorem ipsum dolor sit | lorem ipsum dolor sit | lorem ipsum dolor sit | lorem ipsum dolor sit
-lorem ipsum dolor sit | lorem ipsum dolor sit | lorem ipsum dolor sit | lorem ipsum dolor sit
 
 ## Embedding
 
