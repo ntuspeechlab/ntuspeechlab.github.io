@@ -15,24 +15,24 @@ Offline speech recognition server is built based on the Kaldi toolkit and implem
 
 The above picture illustrates how the offline decoding system works. The audio input will be processed through steps
 
-**Step 1: Resample the audio file**
+**Step 1: Resample the audio file**  
 The audio needs to be split into mono channels, and sample rate that match with the trained model.
 Tools used: Soxi/ffmpeg
 
-**Step 2: Detect the speech in the input**
+**Step 2: Detect the speech in the input**  
 Speaker diarisation (or diarization) is the process of partitioning an input audio stream into homogeneous segments according to the speaker identity.
 Output of this process is the segment file (.seg), including the speaker id, segment that including speech, and start/end time
 Tools used: LIUM 8.4.1
 
-**Step 3: Convert the audio to proper format (kaldi format)**
+**Step 3: Convert the audio to proper format (kaldi format)**  
 To process further by the kaldi toolkit, the audio data and segment file will be parse to kaldi script, to convert to kaldi proper format.
 Tools used: Kaldi scripts
 
-**Step 4: Extract features from the input**
+**Step 4: Extract features from the input**  
 Extract the features from the kaldi format, mfcc and iVector features.
 Tools used: Kaldi scripts
 
-**Step 5: Decode/Generate the transcription**
+**Step 5: Decode/Generate the transcription**  
 Features extracted from previous step will be parsed to kaldi toolkit, with our trained model, to generate the transcription in ctm/stm format.
 Furthermore, transcription are also converted to different formats, support different requests from user: like TextGrid, csv, text.
 
@@ -94,8 +94,10 @@ No matter what the input audio format, our offline system can process to down/up
 # Usage
 
 We provide user 2 way of using our offline system:
-* Using HTTP request which provides modern and standard interface. User can call our HTTP endpoints using curl or other tools like Postman. Our API can also be integrated as third party service.
-* The second way to use our offline system is through our web based application. We provide user an intuitive and easy UI to interact and explore how our offline engine works. Check out our next sections to see how to use our system.
+* Using HTTP request  
+which provides modern and standard interface. User can call our HTTP endpoints using curl or other tools like Postman. Our API can also be integrated as third party service.
+* The second way to use our offline system is through our web based application.  
+We provide user an intuitive and easy UI to interact and explore how our offline engine works. Check out our next sections to see how to use our system.
 
 ## Using HTTP Request
 
@@ -109,10 +111,10 @@ This endpoint allows you to register an account
 
 * Request  
 
-| Body Parameters       | Type                  | Description            |
-| --------------------- | --------------------- | ---------------------- |
-| email - REQUIRED      | string                | Account's email        |
-| password - REQUIRED   | string                | Account's password     |
+    | Body Parameters       | Type                  | Description            |
+    | --------------------- | --------------------- | ---------------------- |
+    | email - REQUIRED      | string                | Account's email        |
+    | password - REQUIRED   | string                | Account's password     |
 
 * Response  
     * 200: OK  
@@ -155,10 +157,10 @@ This endpoint allows you to login and get an account token
 
 * Request  
 
-| Body Parameters       | Type                  | Description            |
-| --------------------- | --------------------- | ---------------------- |
-| email - REQUIRED      | string                | Account's email        |
-| password - REQUIRED   | string                | Account's password     |
+    | Body Parameters       | Type                  | Description            |
+    | --------------------- | --------------------- | ---------------------- |
+    | email - REQUIRED      | string                | Account's email        |
+    | password - REQUIRED   | string                | Account's password     |
 
 * Response  
     * 200: OK  
@@ -188,70 +190,71 @@ https://gateway.speechlab.sg/speech
 
 This endpoint allows you to login and get an account token
 
-    * Request  
+* Request  
 
-        * Headers  
-        
-        | Header Parameters        | Type      | Description                                             |
-        | ---------------------    | --------- | ------------------------------------------------------- |
-        | Authorization - REQUIRED | string    | Access token. Format: Bearer <your token after login>   |
+    * Headers  
+    
+    | Header Parameters        | Type      | Description                                             |
+    | ---------------------    | --------- | ------------------------------------------------------- |
+    | Authorization - REQUIRED | string    | Access token. Format: Bearer <your token after login>   |
 
-        * Form Data Paramters  
-        
-        | Form Data Parameters  | Type    | Description            |
-        | --------------------- | ------- | ---------------------- |
-        | file - REQUIRED       | object  | File object (binary)       |
-        | lang - REQUIRED       | string  | must be one of: ['english', 'mandarin', 'malay', 'english-mandarin', 'english-malay']    |
-        | queue - optional      | string  | Queue where your job will be running in        |
-        | audioType - optional  | string  | One of: ['closetalk', 'telephony']    |
-        | audioTrack - optional | string  | One of: ['single', 'multi']      |
-        | webhook - optional    | string  | API endpoint to receive update when your speech is ready (good way to get update of a speech, see below). Eg: http://your-api.com/status     |
+    * Form Data Paramters  
+    
+    | Form Data Parameters  | Type    | Description                                                                                                                                 |
+    | --------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+    | file - REQUIRED       | object  | File object (binary)                                                                                                                        |
+    | lang - REQUIRED       | string  | must be one of: ['english', 'mandarin', 'malay', 'english-mandarin', 'english-malay']                                                       |
+    | queue - optional      | string  | Queue where your job will be running in                                                                                                     |
+    | audioType - optional  | string  | One of: ['closetalk', 'telephony']                                                                                                          |
+    | audioTrack - optional | string  | One of: ['single', 'multi']                                                                                                                 |
+    | webhook - optional    | string  | API endpoint to receive update when your speech is ready (good way to get update of a speech, see below). Eg: http://your-api.com/status    |
 
-    * Response  
-        * 200: OK  
-        Submited job successfully  
+* Response  
+    * 200: OK  
+    Submited job successfully  
 
-        ```json
-        {
-            "result": null,
-            "status": "created",
-            "formats": [
-                "stm",
-                "srt",
-                "TextGrid"
-            ],
-            "sampling": "16khz",
-            "lang": "english",
-            "name": "Note",
-            "_id": "5f11c797b6d18b0029b60975", // Note this ID
-            "queue": "normal",
-            "createdAt": "2020-07-17T15:45:27.882Z"
-        }
-        ```
+    ```json
+    {
+        "result": null,
+        "status": "created",
+        "formats": [
+            "stm",
+            "srt",
+            "TextGrid"
+        ],
+        "sampling": "16khz",
+        "lang": "english",
+        "name": "Note",
+        "_id": "5f11c797b6d18b0029b60975", // Note this ID
+        "queue": "normal",
+        "createdAt": "2020-07-17T15:45:27.882Z"
+    }
+    ```
 
-        * 403: Forbidden  
-        This status can be one one:  
-            * Your email hasn't been verified. Please check your inbox for verification email  
-            * You're not allowed to submit job to this queue  
-            * Your account has been blocked. Please contact our administration for further detail.  
+    * 403: Forbidden  
+    This status can be one one:  
+        * Your email hasn't been verified. Please check your inbox for verification email  
+        * You're not allowed to submit job to this queue  
+        * Your account has been blocked. Please contact our administration for further detail.  
 
-        ```json-doc
-        {
-            "statusCode": 403,
-            "message": "You haven't verify your email yet. Please check your inbox.",
-            "error": "Forbidden"
-        }
-        ```
-        * 404: Not Found  
-        No speech found with provided ID  
+    ```json-doc
+    {
+        "statusCode": 403,
+        "message": "You haven't verify your email yet. Please check your inbox.",
+        "error": "Forbidden"
+    }
+    ```
+    
+    * 404: Not Found  
+    No speech found with provided ID  
 
-        ```json-doc
-        {
-            "statusCode": 404,
-            "message": "Speech not found",
-            "error": "Not Found"
-        }
-        ```
+    ```json-doc
+    {
+        "statusCode": 404,
+        "message": "Speech not found",
+        "error": "Not Found"
+    }
+    ```
 
 * Note: If you can provide audioType and audioTrack that best describe your audio file, we'll try to use our best-fit model to give you better result.
 
