@@ -15,51 +15,53 @@ Offline speech recognition server is built based on the Kaldi toolkit and implem
 
 The above picture illustrates how the offline decoding system works. The audio input will be processed through steps
 
-### Step 1: Resample the audio file
-The audio needs to be split into mono channels, and sample rate that match with the trained model.
-Tools used: Soxi/ffmpeg
+    * ### Step 1: Resample the audio file
+    The audio needs to be split into mono channels, and sample rate that match with the trained model.
+    Tools used: Soxi/ffmpeg
 
-### Step 2: Detect the speech in the input
-Speaker diarisation (or diarization) is the process of partitioning an input audio stream into homogeneous segments according to the speaker identity.
-Output of this process is the segment file (.seg), including the speaker id, segment that including speech, and start/end time
-Tools used: LIUM 8.4.1
+    * ### Step 2: Detect the speech in the input
+    Speaker diarisation (or diarization) is the process of partitioning an input audio stream into homogeneous segments according to the speaker identity.
+    Output of this process is the segment file (.seg), including the speaker id, segment that including speech, and start/end time
+    Tools used: LIUM 8.4.1
 
-### Step 3: Convert the audio to proper format (kaldi format)
-To process further by the kaldi toolkit, the audio data and segment file will be parse to kaldi script, to convert to kaldi proper format.
-Tools used: Kaldi scripts
+    * ### Step 3: Convert the audio to proper format (kaldi format)
+    To process further by the kaldi toolkit, the audio data and segment file will be parse to kaldi script, to convert to kaldi proper format.
+    Tools used: Kaldi scripts
 
-### Step 4: Extract features from the input
-Extract the features from the kaldi format, mfcc and iVector features.
-Tools used: Kaldi scripts
+    * ### Step 4: Extract features from the input
+    Extract the features from the kaldi format, mfcc and iVector features.
+    Tools used: Kaldi scripts
 
-### Step 5: Decode/Generate the transcription
-Features extracted from previous step will be parsed to kaldi toolkit, with our trained model, to generate the transcription in ctm/stm format.
-Furthermore, transcription are also converted to different formats, support different requests from user: like TextGrid, csv, text.
+    * ### Step 5: Decode/Generate the transcription
+    Features extracted from previous step will be parsed to kaldi toolkit, with our trained model, to generate the transcription in ctm/stm format.
+    Furthermore, transcription are also converted to different formats, support different requests from user: like TextGrid, csv, text.
 
 The file output will be sent to public folder, user could have other post-processing like converting to their required format, sending to other modules (language understanding, adding sentence unit, etc.)
 
 The system will process input files sequentially. The ‘file_name’ of input audio files will be normalized into ‘file_id’. The output folder will have the following structure:
 
+```
 /path/to/the/output/folder/
 .
-├── <file-id-1>
-│   ├── <file-id-1>.<model_name>.ctm
-│   ├── <file-id-1>.<model_name>.srt
-│   ├── <file-id-1>.<model_name>.stm
-│   ├── <file-id-1>.<model_name>.TextGrid
-│   └── <file-id-1>.<model_name>.txt
-├── <file-id-2>
-│   ├── <file-id-2>.<model_name>.ctm
-│   ├── <file-id-2>.<model_name>.srt
-│   ├── <file-id-2>.<model_name>.stm
-│   ├── <file-id-2>.<model_name>.TextGrid
-│   └── <file-id-2>.<model_name>.txt
-└── <file-id-3: eg: 8khz-testfile>
-    ├── 8khz-testfile.<model_name>.ctm
-    ├── 8khz-testfile.<model_name>.srt
-    ├── 8khz-testfile.<model_name>.stm
-    ├── 8khz-testfile.<model_name>.TextGrid
-    └── 8khz-testfile.<model_name>.txt
+├── <file-id-1>  
+│   ├── <file-id-1>.<model_name>.ctm  
+│   ├── <file-id-1>.<model_name>.srt  
+│   ├── <file-id-1>.<model_name>.stm  
+│   ├── <file-id-1>.<model_name>.TextGrid  
+│   └── <file-id-1>.<model_name>.txt  
+├── <file-id-2>  
+│   ├── <file-id-2>.<model_name>.ctm  
+│   ├── <file-id-2>.<model_name>.srt  
+│   ├── <file-id-2>.<model_name>.stm  
+│   ├── <file-id-2>.<model_name>.TextGrid  
+│   └── <file-id-2>.<model_name>.txt  
+└── <file-id-3: eg: 8khz-testfile>  
+    ├── 8khz-testfile.<model_name>.ctm  
+    ├── 8khz-testfile.<model_name>.srt  
+    ├── 8khz-testfile.<model_name>.stm  
+    ├── 8khz-testfile.<model_name>.TextGrid  
+    └── 8khz-testfile.<model_name>.txt  
+```
 
 *Other file types can be existed.
 Information extraction from the output:
@@ -77,11 +79,11 @@ Singapore Code Switch
 Mandarin
 
 Singapore English
-Spoken languages      | Description
---------------------- | --------------------:
-Singapore             | Where user speaks Singapore English
-Code-switch           | Where user speaks English and Mandarin interchangably
-Mandarin              | Where user speaks Mandarin
+| Spoken languages      | Description                                           |
+| --------------------- | ----------------------------------------------------- |
+| Singapore             | Where user speaks Singapore English                   |
+| Code-switch           | Where user speaks English and Mandarin interchangably |
+| Mandarin              | Where user speaks Mandarin                            |
 
 User can upload file with size up to 500MB each time
 For all language models, we support the following file types: .mp3, .mp4, .wav
@@ -110,15 +112,15 @@ https://gateway.speechlab.sg/auth/login
 
 This endpoint allows you to login and get an account token
 
-* Request
-Body Parameters       | Type                  | Description 
---------------------- | :-------------------: | :-------------------- | --------------------:
-email - REQUIRED      | string                | Account's email
-password - REQUIRED   | string                | Account's password 
+* Request  
+| Body Parameters       | Type                  | Description            |
+| --------------------- | --------------------- | ---------------------- |
+| email - REQUIRED      | string                | Account's email        |
+| password - REQUIRED   | string                | Account's password     |
 
-* Response
-200: OK
-Login successfully
+* Response  
+200: OK  
+Login successfully  
 
 ```json
 {
@@ -126,8 +128,8 @@ Login successfully
 }
 ```
 
-404: Not Found
-Email or password is incorrect
+404: Not Found  
+Email or password is incorrect  
 
 ```json-doc
 {
