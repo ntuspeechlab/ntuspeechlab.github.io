@@ -213,7 +213,7 @@ This endpoint allows you to login and get an account token
     * 200: OK  
     Submited job successfully  
 
-    ```json
+    ```json-doc
     {
         "result": null,
         "status": "created",
