@@ -15,24 +15,24 @@ Offline speech recognition server is built based on the Kaldi toolkit and implem
 
 The above picture illustrates how the offline decoding system works. The audio input will be processed through steps
 
-    * ### Step 1: Resample the audio file
+    ### Step 1: Resample the audio file
     The audio needs to be split into mono channels, and sample rate that match with the trained model.
     Tools used: Soxi/ffmpeg
 
-    * ### Step 2: Detect the speech in the input
+    ### Step 2: Detect the speech in the input
     Speaker diarisation (or diarization) is the process of partitioning an input audio stream into homogeneous segments according to the speaker identity.
     Output of this process is the segment file (.seg), including the speaker id, segment that including speech, and start/end time
     Tools used: LIUM 8.4.1
 
-    * ### Step 3: Convert the audio to proper format (kaldi format)
+    ### Step 3: Convert the audio to proper format (kaldi format)
     To process further by the kaldi toolkit, the audio data and segment file will be parse to kaldi script, to convert to kaldi proper format.
     Tools used: Kaldi scripts
 
-    * ### Step 4: Extract features from the input
+    ### Step 4: Extract features from the input
     Extract the features from the kaldi format, mfcc and iVector features.
     Tools used: Kaldi scripts
 
-    * ### Step 5: Decode/Generate the transcription
+    ### Step 5: Decode/Generate the transcription
     Features extracted from previous step will be parsed to kaldi toolkit, with our trained model, to generate the transcription in ctm/stm format.
     Furthermore, transcription are also converted to different formats, support different requests from user: like TextGrid, csv, text.
 
@@ -78,7 +78,6 @@ Singapore Code Switch
 
 Mandarin
 
-Singapore English
 | Spoken languages      | Description                                           |
 | --------------------- | ----------------------------------------------------- |
 | Singapore             | Where user speaks Singapore English                   |
@@ -119,24 +118,24 @@ This endpoint allows you to login and get an account token
 | password - REQUIRED   | string                | Account's password     |
 
 * Response  
-200: OK  
-Login successfully  
+    * 200: OK  
+    Login successfully  
 
-```json
-{
-    "accessToken": "Your token"
-}
-```
+    ```json
+    {
+        "accessToken": "Your token"
+    }
+    ```
 
-404: Not Found  
-Email or password is incorrect  
+    * 404: Not Found  
+    Email or password is incorrect  
 
-```json-doc
-{
-    "statusCode": 401,
-    "message": "Unauthorized"
-}
-```
+    ```json-doc
+    {
+        "statusCode": 401,
+        "message": "Unauthorized"
+    }
+    ```
 
 
 ## Code and Syntax Highlighting
