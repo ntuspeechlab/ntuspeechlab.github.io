@@ -103,7 +103,7 @@ We provide user an intuitive and easy UI to interact and explore how our offline
 
 ### POST | Register
 ```
-https://gateway.speechlab.sg/auth/register
+https://gateway.speechlab.sg/**auth/register**
 ```
 
 This endpoint allows you to register an account
@@ -150,7 +150,7 @@ After successfully register your account, there will be an email sent to your in
 
 ### POST | Login
 ```
-https://gateway.speechlab.sg/auth/login
+https://gateway.speechlab.sg/**auth/login**
 ```
 
 This endpoint allows you to login and get an account token
@@ -185,7 +185,7 @@ This endpoint allows you to login and get an account token
 ### POST | Submit a job
 
 ```
-https://gateway.speechlab.sg/speech
+https://gateway.speechlab.sg/**speech**
 ```
 
 This endpoint allows you to login and get an account token
@@ -265,81 +265,420 @@ About **webhook**: an audio may take long time to decode (depends on its duratio
 About **queue**: a queue is where your job will be running in, each queue will have some workers to pick up your job and process, by default your job will be submitted to normal queue and this queue is shared among others, because of that sometimes your job will have to be queued until our workers available. If you want to have dedicated queue to not share with others, contact our support to get in detail.  
 
 
-## Code and Syntax Highlighting
-
-Code blocks are part of the Markdown spec, but syntax highlighting isn't. However, many renderers - like GitHub or most Jekyll themes - support syntax highlighting. Which languages are supported and how those language names should be written will vary from renderer to renderer. You can find the full list of supported programming languages [here](https://github.com/jneen/rouge/wiki/List-of-supported-languages-and-lexers). Also, it is possible to do `inline code blocks`, by wrapping the text in ` ` ` quotations.
+### GET | Get job status
 
 ```
-No language indicated, so no syntax highlighting.
+https://gateway.speechlab.sg/**speech/:id**
 ```
 
-```ruby
-def print_hi(name)
-  puts "Hi, #{name}"
-end
-print_hi('Tom')
-#=> prints 'Hi, Tom' to STDOUT.
+This api is to retrieve speech's status. If you mean to call this api many times to get speech's status, consider passing webhook when submitting your job as described in above section
+
+* Request  
+
+    * Path parameters
+    
+    | Parameters               | Type      | Description       |
+    | ---------------------    | --------- | ----------------- |
+    | id - REQUIRED            | string    | Speech's ID       |
+    
+    * Headers 
+    
+    | Header Parameters        | Type      | Description                                             |
+    | ---------------------    | --------- | ------------------------------------------------------- |
+    | Authorization - REQUIRED | string    | Access token. Format: Bearer <your token after login>   |
+
+
+* Response  
+    * 200: OK  
+    Login successfully  
+
+    ```json
+    {
+        "status": "processing",
+        "formats": [
+            "stm",
+            "srt",
+            "TextGrid"
+        ],
+        "sampling": "16khz",
+        "lang": "english",
+        "name": "Note",
+        "_id": "5f11c797b6d18b0029b60975",
+        "queue": "normal",
+        "input": [
+            {
+                "isSubmitted": true,
+                "errorCode": null,
+                "status": "processing",
+                "progress": [{
+                    "content": "Decoding",
+                    "createdAt": "2020-07-17T15:45:27.941Z"
+                }],
+                "_id": "5f11c798b6d18b0029b60977",
+                "file": {
+                    "_id": "5f11c797b6d18b0029b60976",
+                    "originalName": "james-test.wav",
+                    "mimeType": "audio/wave",
+                    "filename": "5f11c797b6d18b0029b60976.wav",
+                    "size": 187404,
+                    "duration": 5.855,
+                    "createdAt": "2020-07-17T15:45:27.941Z"
+                }
+            }
+        ],
+        "createdAt": "2020-07-17T15:45:27.882Z",
+        "sourceFile": {
+            "_id": "5f11c797b6d18b0029b60976",
+            "originalName": "james-test.wav",
+            "mimeType": "audio/wave",
+            "filename": "5f11c797b6d18b0029b60976.wav",
+            "size": 187404,
+            "duration": 5.855,
+            "createdAt": "2020-07-17T15:45:27.941Z"
+        }
+    }
+    ```
+
+    * 403: Forbidden  
+    This status can be one of:  
+    - Your haven't verified your account  
+    - Your account has been blocked  
+    ```
+    {
+        "statusCode": 403,
+        "message": "You haven't verify your email yet. Please check your inbox.",
+        "error": "Forbidden"
+    }
+    ```
+
+    * 404: Not Found  
+    No speech found with provided ID  
+
+    ```json-doc
+    {
+        "statusCode": 404,
+        "message": "Speech not found",
+        "error": "Not Found"
+    }
+    ```
+    
+### GET | Download transcription
 ```
+https://gateway.speechlab.sg/**speech/:id/result**
+```
+
+This API returns transcription when speech's status is **done**
+
+* Request  
+
+    * Path parameters
+    
+    | Parameters               | Type      | Description       |
+    | ---------------------    | --------- | ----------------- |
+    | id - REQUIRED            | string    | Speech's ID       |
+    
+    * Headers 
+    
+    | Header Parameters        | Type      | Description                                             |
+    | ---------------------    | --------- | ------------------------------------------------------- |
+    | Authorization - REQUIRED | string    | Access token. Format: Bearer <your token after login>   |
+
+
+* Response  
+    * 200: OK  
+
+    ```json
+    {
+        url: "a downloadable link"
+    }
+    ```
+
+    * 403: Forbidden  
+    This status can be one of:  
+    - Your haven't verified your account  
+    - Your account has been blocked  
+    ```
+    {
+        "statusCode": 403,
+        "message": "You haven't verify your email yet. Please check your inbox.",
+        "error": "Forbidden"
+    }
+    ```
+
+    * 404: Not Found  
+    No speech found with provided ID  
+
+    ```json-doc
+    {
+        "statusCode": 404,
+        "message": "Speech not found",
+        "error": "Not Found"
+    }
+    ```
+    
+### POST | Change account's password
+```
+https://gateway.speechlab.sg/**auth/change-password**
+```
+
+This endpoint allows you to login and get an account token
+
+* Request  
+
+    | Body Parameters               | Type                  | Description                |
+    | ----------------------------- | --------------------- | -------------------------- |
+    | email - REQUIRED              | string                | Account's email            |
+    | currentPassword - REQUIRED    | string                | Account's current password |
+    | newPassword - REQUIRED        | string                | Account's new password     |
+    | confirmNewPassword - REQUIRED | string                | Account's new password     |
+
+
+* Response  
+    * 200: OK  
+    Login successfully  
+
+    ```json
+    {
+        "message": "Password changed successfully"
+    }
+    ```
+
+    * 400: Bad Request  
+    Your body parameters are incorrect  
+
+    ```json-doc
+    {
+        "statusCode": 400,
+        "message": [
+            "email must be longer than or equal to 6 characters",
+            "email must be an email"
+        ],
+        "error": "Bad Request"
+    }
+    ```
+    
+    * 404: Not Found  
+    No account found with provided email  
+
+    ```json-doc
+    {
+        "statusCode": 404,
+        "message": "Account not found",
+        "error": "Not Found"
+    }
+    ```
+    
+### POST | Forgot account's password
+```
+https://gateway.speechlab.sg/auth/**forgot-password**
+```
+
+This API is used to reset account password
+
+* Request  
+
+    | Body Parameters       | Type                  | Description            |
+    | --------------------- | --------------------- | ---------------------- |
+    | email - REQUIRED      | string                | Account's email        |
+
+
+* Response  
+    * 200: OK  
+    Request to reset password sent successfully, check your inbox to get reset code  
+
+    ```json
+    {
+        "message": "Please check your inbox for reset password code"
+    }
+    ```
+
+    * 400: Bad Request  
+    Your body parameters are incorrect  
+
+    ```json-doc
+    {
+        "statusCode": 400,
+        "message": [
+            "email must be longer than or equal to 6 characters",
+            "email must be an email"
+        ],
+        "error": "Bad Request"
+    }
+    ```
+    
+    * 404: Not Found  
+    No account found with provided email  
+
+    ```json-doc
+    {
+        "statusCode": 404,
+        "message": "Account not found",
+        "error": "Not Found"
+    }
+    ```
+
+After sending this API, there's an email will be sent to your email address which contains a code used to reset password (see the API below)
+
+### POST | Reset password
+```
+https://gateway.speechlab.sg/**auth/reset-password**
+```
+
+* Request  
+
+    | Body Parameters               | Type                  | Description                |
+    | ----------------------------- | --------------------- | -------------------------- |
+    | email - REQUIRED              | string                | Account's email            |
+    | currentPassword - REQUIRED    | string                | Account's current password |
+    | newPassword - REQUIRED        | string                | Account's new password     |
+    | confirmNewPassword - REQUIRED | string                | Account's new password     |
+
+* Response  
+    * 200: OK  
+    Successfully reset your account's password  
+
+    ```json
+    {
+        "message": "Your password has been reset"
+    }
+    ```
+
+    * 400: Bad Request  
+    Your body parameters are incorrect  
+
+    ```json-doc
+    {
+        "statusCode": 400,
+        "message": [
+            "email must be longer than or equal to 6 characters",
+            "email must be an email"
+        ],
+        "error": "Bad Request"
+    }
+    ```
+    
+    * 404: Not Found  
+    No account found with provided email  
+
+    ```json-doc
+    {
+        "statusCode": 404,
+        "message": "Email not found or code is incorrect",
+        "error": "Not Found"
+    }
+    ```
+    
+    * 406: Not Acceptable  
+    Your newPassword and confirmNewPassword are not matched  
+
+    ```json-doc
+    {
+        "statusCode": 406,
+        "message": "New passwords are not matched each other",
+        "error": "Not Acceptable"
+    }
+    ```
+    
+    
+### POST | Send verification email
+```
+https://gateway.speechlab.sg/**auth/verify**
+```
+
+Verification email is sent right after account registration, and will be valid for 12 hours. This api endpoint is used in case you want to send new verification email
+
+* Request  
+
+    | Header Parameters        | Type      | Description                                             |
+    | ---------------------    | --------- | ------------------------------------------------------- |
+    | Authorization - REQUIRED | string    | Access token. Format: Bearer <your token after login>   |
+
+* Response  
+    * 200: OK  
+    Login successfully  
+
+    ```json
+    {
+        "accessToken": "Please check your inbox for verification email"
+    }
+    ```
+
+    * 422: Unprocessable Entity  
+    Your account has been verified before  
+
+    ```json-doc
+    {
+        "statusCode": 422,
+        "message": "Account has been verified before"
+    }
+    ```
+    
+### POST | Create an application
+```
+https://gateway.speechlab.sg/**applications**
+```
+
+This endpoint is used to create a third-party application that make uses of Gateway APIs.
+**Note**: if success, app **secret** will only be shown once, be sure to save it somewhere privately
+
+* Request  
+
+    * Headers
+    
+    | Header Parameters        | Type      | Description                                             |
+    | ---------------------    | --------- | ------------------------------------------------------- |
+    | Authorization - REQUIRED | string    | Access token. Format: Bearer <your token after login>   |
+    
+    * Body
+    
+    | Body Parameters       | Type                  | Description             |
+    | --------------------- | --------------------- | ----------------------- |
+    | name - REQUIRED       | string                | Your application's name |
+
+* Response  
+    * 200: OK  
+    Login successfully  
+
+    ```json
+    {
+        "_id": "5f8d581e87bf680b226d3cc1", // App ID
+        "name": "Test App",
+        "key": "5f8d581e87bf680b226d3cc0", // Key ID (used to get public key to verify JWT token)
+        "createdAt": "2020-10-19T09:10:54.482Z",
+        "secret": "41d29bb4c52389441c1647764de94493c16a8c42e9529bdaa7502cccc7f111e7" // App secret
+    }
+    ```
+    
+### POST | Get JWT Public Key
+```
+https://gateway.speechlab.sg/**keys/:keyId**
+```
+
+This endpoints return JWT public key, third party will use this key in order to verify JWT token generated from API gateway
+
+* Request  
+
+    | Body Parameters       | Type       | Description                                                  |
+    | --------------------- | ---------- | ------------------------------------------------------------ |
+    | KeyId - optional      | string     | Key ID returned after creating application (see above)       |
+
+* Response  
+    * 200: OK  
+    Login successfully  
+
+    ```json
+        public key in file
+    ```
+    
+    
 
 {% highlight js %}
-// Example can be run directly in your JavaScript console
-
-// Create a function that takes two arguments and returns the sum of those arguments
-var adder = new Function("a", "b", "return a + b");
-
-// Call the function
-adder(2, 6);
-// > 8
+See more about websocket protocol
 {% endhighlight %}
 
 Another option is to embed your code through [Gist](https://en.support.wordpress.com/gist/).
 
-## Unordered and Numbered Lists
-
-You can make an unordered and nested list by preceding one or more lines of text with `-`, `*`, or `+`, and indenting sublists. The following lists show the full range of possible list formats.
-
-* List item one
-    * List item one
-        * List item one
-        * List item two
-        * List item three
-        * List item four
-    * List item two
-    * List item three
-    * List item four
-* List item two
-* List item three
-* List item four
-
-Numbered lists are made by using numbers instead of bullet points.
-
-1. List item one
-    1. List item one
-        1. List item one
-        2. List item two
-        3. List item three
-        4. List item four
-    2. List item two
-    3. List item three
-    4. List item four
-2. List item two
-3. List item three
-4. List item four
-
-
-## Embedding
-
-Plenty of social media sites offer the option of embedding certain parts of their site on your own site, such as YouTube and Twitter:
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/mthtn1X4eUY" frameborder="0" allowfullscreen></iframe>
-
-<a class="twitter-grid" data-partner="tweetdeck" href="https://twitter.com/paululele/timelines/755079130027352064">New Collection</a> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
-
-## Inline HTML elements
-
-HTML defines a long list of available inline tags, which you can mix with Markdown if you like. A complete list of which can be found on the [Mozilla Developer Network](https://developer.mozilla.org/en-US/docs/Web/HTML/Element).
-
-## Useful Resources
+## Useful Resources (formatting)
 
 More information on Markdown can be found at the following links:
 
@@ -348,3 +687,4 @@ More information on Markdown can be found at the following links:
 - [Markdown Basics](https://daringfireball.net/projects/markdown/basics)
 - [GitHub Flavoured Markdown Spec](https://github.github.com/gfm/)
 - [Basic writing and formatting syntax](https://help.github.com/articles/basic-writing-and-formatting-syntax/#lists)
+
