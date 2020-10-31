@@ -72,13 +72,13 @@ Speech should be sent to the server in raw blocks of data, using the encoding sp
 ## Reading results
 Server sends recognition results and other information to the client using the JSON format. The response can contain the following fields:  
 
-status -- response status (integer), see codes below
-message -- (optional) status message
-result -- (optional) recognition result, containing the following fields:
-hypotheses - recognized words, a list with each item containing the following:
-transcript -- recognized words
-confidence -- (optional) confidence of the hypothesis (float, 0..1)
-final -- true when the hypothesis is final, i.e., doesn't change any more
+    * status -- response status (integer), see codes below  
+    * message -- (optional) status message  
+    * result -- (optional) recognition result, containing the following fields:  
+        * hypotheses - recognized words, a list with each item containing the following:  
+            * transcript -- recognized words  
+            * confidence -- (optional) confidence of the hypothesis (float, 0..1)  
+        * final -- true when the hypothesis is final, i.e., doesn't change any more  
 
 
 The following status codes are currently in use:  
