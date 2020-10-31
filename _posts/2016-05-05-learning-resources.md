@@ -25,7 +25,8 @@ For all language models, we support the following file types: .mp3, .mp4, .wav
 
 ## Recording guidelines
 
-For best results, make sure that your audio documents also meet these requirements:
+For best results, make sure that your audio documents also meet these requirements:  
+
     * Channel audio: 16 kHz (recommended) sample rate  
     * Recording Guidelines: When transcribing audio, make sure that the audio recordings you provide to the transcription service meet these recording guidelines
 
@@ -39,18 +40,19 @@ Make sure that you speak such that your voice can be clearly heard in the record
 **Speak at a consistent volume.**  
 Make sure that that the speech segments in your audio document have a consistent volume. A recording with widely varying volume levels degrades the performance of the Speech Lab engines.
 
-**Mono channel audio.**
+**Mono channel audio.**  
 The Live Transcriber currently support only single-track audio files. If your audio file uses more than one audio channel, the transcription service will only use the first audio channel. For better performance, downmix your audio document to mono audio before attempting to run it through our transcription engines.
 
-**Record at 16kHz.**
+**Record at 16kHz.**  
 The Live Transcriber is optimized to transcribed audio sampled at 16kHz. Transcribing audio with a sampling rate that is significantly higher or lower than 16kHz may degrade the performance of the Speech Lab engines.
 
-**Take turns speaking.**
+**Take turns speaking.**  
 If your recording includes multiple speakers, make sure that they don’t speak over each other. Overlapping speech degrades the performance of the Speech Lab engines.
 
 
-**Use models that support the spoken language.**
+**Use models that support the spoken language.**  
 Use the model that supports the spoken language in the audio document. Speech in a language that is not supported by the model selected when beginning transcription will be incorrectly transcribed.
+
 
 # Websocket-based client-server protocol  
 
@@ -70,21 +72,21 @@ Speech should be sent to the server in raw blocks of data, using the encoding sp
 ## Reading results
 Server sends recognition results and other information to the client using the JSON format. The response can contain the following fields:  
 
-    **_status_** -- response status (integer), see codes below
-    **_message_** -- (optional) status message
-    **_result_** -- (optional) recognition result, containing the following fields:
-    **_hypotheses_** - recognized words, a list with each item containing the following:
-    **_transcript_** -- recognized words
-    **_confidence_** -- (optional) confidence of the hypothesis (float, 0..1)
-    **_final_** -- true when the hypothesis is final, i.e., doesn't change any more
+status -- response status (integer), see codes below
+message -- (optional) status message
+result -- (optional) recognition result, containing the following fields:
+hypotheses - recognized words, a list with each item containing the following:
+transcript -- recognized words
+confidence -- (optional) confidence of the hypothesis (float, 0..1)
+final -- true when the hypothesis is final, i.e., doesn't change any more
 
 
 The following status codes are currently in use:  
 
-    **_0_** -- Success. Usually used when recognition results are sent
-    **_2_** -- Aborted. Recognition was aborted for some reason.
-    **_1_** -- No speech. Sent when the incoming audio contains a large portion of silence or non-speech.
-    **_9_** -- Not available. Used when all recognizer processes are currently in use and recognition cannot be performed.
+0 -- Success. Usually used when recognition results are sent  
+2 -- Aborted. Recognition was aborted for some reason.  
+1 -- No speech. Sent when the incoming audio contains a large portion of silence or non-speech.  
+9 -- Not available. Used when all recognizer processes are currently in use and recognition cannot be performed.  
 
 
 Websocket is always closed by the server after sending a non-zero status update.
@@ -94,6 +96,7 @@ Examples of server responses:
   {"status": 9}{"status": 0, "result": {"hypotheses": [{"transcript": "see on"}], "final": false}}  
   {"status": 0, "result": {"hypotheses": [{"transcript": "see on teine lause."}], "final": true}}
   ```
+
 Server segments incoming audio on the fly. For each segment, many non-final hypotheses, followed by one final hypothesis are sent. Non-final hypotheses are used to present partial recognition hypotheses to the client. A sequence of non-final hypotheses is always followed by a final hypothesis for that segment. After sending a final hypothesis for a segment, server starts decoding the next segment, or closes the connection, if all audio sent by the client has been processed. Client is responsible for presenting the results to the user in a way suitable for the application.
 
 
