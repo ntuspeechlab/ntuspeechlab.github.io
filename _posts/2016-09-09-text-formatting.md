@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Access our Speechlab engine with batch mode"
-author: "Duc"
+author: "Ly, Duc"
 categories: sample
 tags: [sample]
 image: arctic-1.jpg
@@ -103,7 +103,7 @@ We provide user an intuitive and easy UI to interact and explore how our offline
 
 ### POST | Register
 ```
-https://gateway.speechlab.sg/**auth/register**
+https://gateway.speechlab.sg/auth/register
 ```
 
 This endpoint allows you to register an account
@@ -150,7 +150,7 @@ After successfully register your account, there will be an email sent to your in
 
 ### POST | Login
 ```
-https://gateway.speechlab.sg/**auth/login**
+https://gateway.speechlab.sg/auth/login
 ```
 
 This endpoint allows you to login and get an account token
@@ -185,7 +185,7 @@ This endpoint allows you to login and get an account token
 ### POST | Submit a job
 
 ```
-https://gateway.speechlab.sg/**speech**
+https://gateway.speechlab.sg/speech
 ```
 
 This endpoint allows you to login and get an account token
@@ -193,13 +193,13 @@ This endpoint allows you to login and get an account token
 * Request  
 
     * Headers  
-    
+
     | Header Parameters        | Type      | Description                                             |
     | ---------------------    | --------- | ------------------------------------------------------- |
     | Authorization - REQUIRED | string    | Access token. Format: Bearer <your token after login>   |
 
     * Form Data Paramters  
-    
+
     | Form Data Parameters  | Type    | Description                                                                                                                                 |
     | --------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
     | file - REQUIRED       | object  | File object (binary)                                                                                                                        |
@@ -244,7 +244,7 @@ This endpoint allows you to login and get an account token
         "error": "Forbidden"
     }
     ```
-    
+
     * 404: Not Found  
     No speech found with provided ID  
 
@@ -268,7 +268,7 @@ About **queue**: a queue is where your job will be running in, each queue will h
 ### GET | Get job status
 
 ```
-https://gateway.speechlab.sg/**speech/:id**
+https://gateway.speechlab.sg/speech/:id
 ```
 
 This api is to retrieve speech's status. If you mean to call this api many times to get speech's status, consider passing webhook when submitting your job as described in above section
@@ -276,13 +276,13 @@ This api is to retrieve speech's status. If you mean to call this api many times
 * Request  
 
     * Path parameters
-    
+
     | Parameters               | Type      | Description       |
     | ---------------------    | --------- | ----------------- |
     | id - REQUIRED            | string    | Speech's ID       |
-    
-    * Headers 
-    
+
+    * Headers
+
     | Header Parameters        | Type      | Description                                             |
     | ---------------------    | --------- | ------------------------------------------------------- |
     | Authorization - REQUIRED | string    | Access token. Format: Bearer <your token after login>   |
@@ -361,10 +361,10 @@ This api is to retrieve speech's status. If you mean to call this api many times
         "error": "Not Found"
     }
     ```
-    
+
 ### GET | Download transcription
 ```
-https://gateway.speechlab.sg/**speech/:id/result**
+https://gateway.speechlab.sg/speech/:id/result
 ```
 
 This API returns transcription when speech's status is **done**
@@ -372,13 +372,13 @@ This API returns transcription when speech's status is **done**
 * Request  
 
     * Path parameters
-    
+
     | Parameters               | Type      | Description       |
     | ---------------------    | --------- | ----------------- |
     | id - REQUIRED            | string    | Speech's ID       |
-    
-    * Headers 
-    
+
+    * Headers
+
     | Header Parameters        | Type      | Description                                             |
     | ---------------------    | --------- | ------------------------------------------------------- |
     | Authorization - REQUIRED | string    | Access token. Format: Bearer <your token after login>   |
@@ -415,10 +415,10 @@ This API returns transcription when speech's status is **done**
         "error": "Not Found"
     }
     ```
-    
+
 ### POST | Change account's password
 ```
-https://gateway.speechlab.sg/**auth/change-password**
+https://gateway.speechlab.sg/auth/change-password
 ```
 
 This endpoint allows you to login and get an account token
@@ -456,7 +456,7 @@ This endpoint allows you to login and get an account token
         "error": "Bad Request"
     }
     ```
-    
+
     * 404: Not Found  
     No account found with provided email  
 
@@ -467,10 +467,10 @@ This endpoint allows you to login and get an account token
         "error": "Not Found"
     }
     ```
-    
+
 ### POST | Forgot account's password
 ```
-https://gateway.speechlab.sg/auth/**forgot-password**
+https://gateway.speechlab.sg/auth/forgot-password
 ```
 
 This API is used to reset account password
@@ -505,7 +505,7 @@ This API is used to reset account password
         "error": "Bad Request"
     }
     ```
-    
+
     * 404: Not Found  
     No account found with provided email  
 
@@ -521,7 +521,7 @@ After sending this API, there's an email will be sent to your email address whic
 
 ### POST | Reset password
 ```
-https://gateway.speechlab.sg/**auth/reset-password**
+https://gateway.speechlab.sg/auth/reset-password
 ```
 
 * Request  
@@ -556,7 +556,7 @@ https://gateway.speechlab.sg/**auth/reset-password**
         "error": "Bad Request"
     }
     ```
-    
+
     * 404: Not Found  
     No account found with provided email  
 
@@ -567,7 +567,7 @@ https://gateway.speechlab.sg/**auth/reset-password**
         "error": "Not Found"
     }
     ```
-    
+
     * 406: Not Acceptable  
     Your newPassword and confirmNewPassword are not matched  
 
@@ -578,11 +578,11 @@ https://gateway.speechlab.sg/**auth/reset-password**
         "error": "Not Acceptable"
     }
     ```
-    
-    
+
+
 ### POST | Send verification email
 ```
-https://gateway.speechlab.sg/**auth/verify**
+https://gateway.speechlab.sg/auth/verify
 ```
 
 Verification email is sent right after account registration, and will be valid for 12 hours. This api endpoint is used in case you want to send new verification email
@@ -612,10 +612,10 @@ Verification email is sent right after account registration, and will be valid f
         "message": "Account has been verified before"
     }
     ```
-    
+
 ### POST | Create an application
 ```
-https://gateway.speechlab.sg/**applications**
+https://gateway.speechlab.sg/applications
 ```
 
 This endpoint is used to create a third-party application that make uses of Gateway APIs.
@@ -624,13 +624,13 @@ This endpoint is used to create a third-party application that make uses of Gate
 * Request  
 
     * Headers
-    
+
     | Header Parameters        | Type      | Description                                             |
     | ---------------------    | --------- | ------------------------------------------------------- |
     | Authorization - REQUIRED | string    | Access token. Format: Bearer <your token after login>   |
-    
+
     * Body
-    
+
     | Body Parameters       | Type                  | Description             |
     | --------------------- | --------------------- | ----------------------- |
     | name - REQUIRED       | string                | Your application's name |
@@ -639,7 +639,7 @@ This endpoint is used to create a third-party application that make uses of Gate
     * 200: OK  
     Login successfully  
 
-    ```json
+    ```json-doc
     {
         "_id": "5f8d581e87bf680b226d3cc1", // App ID
         "name": "Test App",
@@ -648,7 +648,7 @@ This endpoint is used to create a third-party application that make uses of Gate
         "secret": "41d29bb4c52389441c1647764de94493c16a8c42e9529bdaa7502cccc7f111e7" // App secret
     }
     ```
-    
+
 ### POST | Get JWT Public Key
 ```
 https://gateway.speechlab.sg/**keys/:keyId**
@@ -669,8 +669,8 @@ This endpoints return JWT public key, third party will use this key in order to 
     ```json
         public key in file
     ```
-    
-    
+
+
 
 {% highlight js %}
 See more about websocket protocol
@@ -687,4 +687,3 @@ More information on Markdown can be found at the following links:
 - [Markdown Basics](https://daringfireball.net/projects/markdown/basics)
 - [GitHub Flavoured Markdown Spec](https://github.github.com/gfm/)
 - [Basic writing and formatting syntax](https://help.github.com/articles/basic-writing-and-formatting-syntax/#lists)
-
