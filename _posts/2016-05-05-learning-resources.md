@@ -69,19 +69,23 @@ Speech should be sent to the server in raw blocks of data, using the encoding sp
 
 ## Reading results
 Server sends recognition results and other information to the client using the JSON format. The response can contain the following fields:  
-    * status -- response status (integer), see codes below
-    * message -- (optional) status message
-    * result -- (optional) recognition result, containing the following fields:
-    * hypotheses - recognized words, a list with each item containing the following:
-    * transcript -- recognized words
-    * confidence -- (optional) confidence of the hypothesis (float, 0..1)
-    * final -- true when the hypothesis is final, i.e., doesn't change any more
+
+    **_status_** -- response status (integer), see codes below
+    **_message_** -- (optional) status message
+    **_result_** -- (optional) recognition result, containing the following fields:
+    **_hypotheses_** - recognized words, a list with each item containing the following:
+    **_transcript_** -- recognized words
+    **_confidence_** -- (optional) confidence of the hypothesis (float, 0..1)
+    **_final_** -- true when the hypothesis is final, i.e., doesn't change any more
+
 
 The following status codes are currently in use:  
-    * 0 -- Success. Usually used when recognition results are sent
-    * 2 -- Aborted. Recognition was aborted for some reason.
-    * 1 -- No speech. Sent when the incoming audio contains a large portion of silence or non-speech.
-    * 9 -- Not available. Used when all recognizer processes are currently in use and recognition cannot be performed.
+
+    **_0_** -- Success. Usually used when recognition results are sent
+    **_2_** -- Aborted. Recognition was aborted for some reason.
+    **_1_** -- No speech. Sent when the incoming audio contains a large portion of silence or non-speech.
+    **_9_** -- Not available. Used when all recognizer processes are currently in use and recognition cannot be performed.
+
 
 Websocket is always closed by the server after sending a non-zero status update.
 
@@ -120,5 +124,3 @@ Output
 {"status": 0, "hypotheses": [{"utterance": "one two or three you fall five six seven eight. yeah."}], "id": "4e4594ee-bdb2-401f-8114-41a541d89eb8"}
 
 ```
-
-#
