@@ -17,6 +17,3 @@ Below you can find everything you need to get started.
 ## Questions?
 
 If you are having any problems, any questions or suggestions, feel free to [email us at]()
-
-
-
